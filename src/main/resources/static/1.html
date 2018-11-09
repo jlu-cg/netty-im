@@ -138,63 +138,92 @@ img {
 }
 </style>
 <script>
-	window.onload = function() {
-		var arrIcon = [ 'pic/01.jpg', 'pic/02.jpg' ];
-		var num = 0; //控制头像改变
-		var iNow = -1; //用来累加改变左右浮动
-		var icon = document.getElementById('user_face_icon')
-				.getElementsByTagName('img');
-		var btn = document.getElementById('btn');
-		var text = document.getElementById('text');
-		var content = document.getElementsByTagName('ul')[0];
-		var img = content.getElementsByTagName('img');
-		var span = content.getElementsByTagName('span');
+function getRequest() {
+  var url = location.search;
+  var theRequest = new Object();
+  if (url.indexOf("?") != -1) {
+    var str = url.substr(1);
+    strs = str.split("&");
+    for (var i = 0; i < strs.length; i++) {
+      theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+    }
+  }
+  return theRequest;
+}
+var iNow = -1;
+var content = document.getElementsByTagName('ul')[0];
+var img = content.getElementsByTagName('img');
+var span = content.getElementsByTagName('span');
 
-		icon[0].onclick = function() {
-			if (num == 0) {
-				this.src = arrIcon[1];
-				num = 1;
-			} else if (num == 1) {
-				this.src = arrIcon[0];
-				num = 0;
-			}
-		}
-		btn.onclick = function() {
-			if (text.value == '') {
-				alert('不能发送空消息');
-			} else {
-				content.innerHTML += '<li><img src="'+arrIcon[num]+'"><span>'
-						+ text.value + '</span></li>';
-				iNow++;
-				if (num == 0) {
-					img[iNow].className += 'imgright';
-					span[iNow].className += 'spanright';
-				} else {
-					img[iNow].className += 'imgleft';
-					span[iNow].className += 'spanleft';
-				}
-				text.value = '';
-				// 内容过多时,将滚动条放置到最底端
-				content.scrollTop = content.scrollHeight;
-			}
+function changePosition(direction){
+	iNow++;
+	if(direction){
+		img[iNow].className += 'imgright';
+    span[iNow].className += 'spanright';
+	}else{
+    img[iNow].className += 'imgleft';
+    span[iNow].className += 'spanleft';
+	}
+}
+var ws = new WebSocket('ws://localhost:8090/websocket');
+
+window.onload = function() {
+	var requestParams = new Object();
+	requestParams = getRequest();
+	var fromId = requestParams['fromId'];
+	var toId = requestParams['toId'];
+	var fromIcon = 'pic/' + fromId + '.jpg';
+	var toIcon = 'pic/' + toId + '.jpg';
+	var num = 0;
+	var icon = document.getElementById('user_face_icon').getElementsByTagName('img');
+	var btn = document.getElementById('btn');
+	var text = document.getElementById('text');
+
+	icon[0].src = fromIcon;
+	btn.onclick = function() {
+		if (text.value == '') {
+			alert('不能发送空消息');
+		} else {
+      content.innerHTML += '<li><img src="' + fromIcon + '"><span>'
+          + text.value + '</span></li>';
+      changePosition(true);
+      ws.send('{"fromId":"' + fromId + '","toId":"' + toId + '","text":"' + text.value + '"}');
+			text.value = '';
+			// 内容过多时,将滚动条放置到最底端
+			content.scrollTop = content.scrollHeight;
 		}
 	}
+}
+
+/*ws.onopen = function() {
+	ws.send('Hello Server!');
+};
+ws.onclose = function(event) {
+	var code = event.code;
+	var reason = event.reason;
+	var wasClean = event.wasClean;
+};
+ws.onmessage = function(event) {
+	var data = event.data;
+};
+socket.onerror = function(event) {
+
+};*/
 </script>
 </head>
 <body>
-    <div id="container">
-        <div class="header">
-            <span style="float: left;">业余草:模拟微信聊天界面</span>
-            <span style="float: right;">14:21</span>
-        </div>
-        <ul class="content"></ul>
-        <div class="footer">
-            <div id="user_face_icon">
-                <img src="favicon.ico" alt="">
-            </div>
-            <input id="text" type="text" placeholder="说点什么吧...">
-            <span id="btn">发送</span>
-        </div>
-    </div>
+	<div id="container">
+		<div class="header">
+			<span style="float: left;">业余草:模拟微信聊天界面</span> <span
+				style="float: right;">14:21</span>
+		</div>
+		<ul class="content"></ul>
+		<div class="footer">
+			<div id="user_face_icon">
+				<img src="favicon.ico" alt="" />
+			</div>
+			<input id="text" type="text" placeholder="说点什么吧..." /> <span id="btn">发送</span>
+		</div>
+	</div>
 </body>
 </html>

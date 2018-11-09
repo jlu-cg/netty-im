@@ -1,7 +1,6 @@
 package com.gardener.im.server;
 
-import com.gardener.im.handler.HttpHandler;
-import com.gardener.im.handler.WebSocketHandler;
+import com.gardener.im.handler.WebsocketServerHandler;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -21,10 +20,9 @@ public class ImInitializer extends ChannelInitializer<SocketChannel>{
 		pipeline.addLast(new HttpServerCodec());
 		pipeline.addLast(new HttpObjectAggregator(65536));
 		pipeline.addLast(new ChunkedWriteHandler());
-		pipeline.addLast(new HttpHandler());
 		pipeline.addLast(new WebSocketServerCompressionHandler());
 		pipeline.addLast(new WebSocketServerProtocolHandler("/websocket", null, true));
-		pipeline.addLast(new WebSocketHandler());
+		pipeline.addLast(new WebsocketServerHandler());
 	}
 
 }

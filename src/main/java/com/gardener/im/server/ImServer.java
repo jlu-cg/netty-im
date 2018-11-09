@@ -3,6 +3,8 @@ package com.gardener.im.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gardener.im.constant.ImConstant;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -28,7 +30,7 @@ public class ImServer {
 				.childHandler(new ImInitializer())
 				.option(ChannelOption.SO_BACKLOG, 128);
 			
-			Channel ch = b.bind(8090).sync().channel();
+			Channel ch = b.bind(ImConstant.DEFAULT_SERVER_PORT).sync().channel();
 			LOGGER.info("start ready");
 			ch.closeFuture().sync();
 		} catch (InterruptedException e) {

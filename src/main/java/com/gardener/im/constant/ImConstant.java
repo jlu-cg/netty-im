@@ -12,4 +12,6 @@ public class ImConstant {
 	public static final String LOCATION = System.getProperty("user.dir") + "/src/main/resources/static";
 	
 	public static final File NOT_FOUND = new File(LOCATION + "/404.html");
+	
+	public static final int DEFAULT_SERVER_PORT = 8090;
 }
