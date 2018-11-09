@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -24,7 +25,8 @@ public class ImServer {
 			b.group(bossGroup, workerGroup)
 				.channel(NioServerSocketChannel.class)
 				.handler(new LoggingHandler(LogLevel.INFO))
-				.childHandler(new ImInitializer());
+				.childHandler(new ImInitializer())
+				.option(ChannelOption.SO_BACKLOG, 128);
 			
 			Channel ch = b.bind(8090).sync().channel();
 			LOGGER.info("start ready");
