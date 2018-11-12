@@ -9,6 +9,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -25,12 +26,26 @@ import io.netty.handler.stream.ChunkedNioFile;
  * @author gardener
  *
  */
-public class HttpHandler {
+public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>{
+	
+	private String wsUri;
+	
+	public HttpHandler(String wsUri) {
+		this.wsUri = wsUri;
+	}
 
 	public void handle(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
 		String uri = request.uri();
+		if (wsUri.equalsIgnoreCase(uri)) {
+            ctx.fireChannelRead(request.retain());
+            return ;
+        }
+		int fileIndex = uri.indexOf("?");
+		if(fileIndex != -1) {
+			uri = uri.substring(0, fileIndex);
+		}
 		if ("favicon.ico".equals(uri)) {
-			return;
+			return ;
 		}
 
 		String path = ImConstant.LOCATION + uri;
@@ -86,12 +101,9 @@ public class HttpHandler {
 
 		file.close();
 	}
-	
-	public static HttpHandler getInstance(){
-        return HttpHandler.InnerClass.SINGLETON;
-    }
-	
-	private static class InnerClass{
-		private static HttpHandler SINGLETON = new HttpHandler();
+
+	@Override
+	public void messageReceived(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
+		handle(ctx, req);
 	}
 }

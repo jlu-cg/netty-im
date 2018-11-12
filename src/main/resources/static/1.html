@@ -150,12 +150,8 @@ function getRequest() {
   }
   return theRequest;
 }
-var iNow = -1;
-var content = document.getElementsByTagName('ul')[0];
-var img = content.getElementsByTagName('img');
-var span = content.getElementsByTagName('span');
 
-function changePosition(direction){
+function changePosition(direction, iNow){
 	iNow++;
 	if(direction){
 		img[iNow].className += 'imgright';
@@ -165,9 +161,11 @@ function changePosition(direction){
     span[iNow].className += 'spanleft';
 	}
 }
-var ws = new WebSocket('ws://localhost:8090/websocket');
 
+window.WebSocket = window.WebSocket || window.MozWebSocket;
 window.onload = function() {
+	var ws = new WebSocket('ws://localhost:8090/ws');
+	alert(ws);
 	var requestParams = new Object();
 	requestParams = getRequest();
 	var fromId = requestParams['fromId'];
@@ -178,6 +176,10 @@ window.onload = function() {
 	var icon = document.getElementById('user_face_icon').getElementsByTagName('img');
 	var btn = document.getElementById('btn');
 	var text = document.getElementById('text');
+	var iNow = -1;
+	var content = document.getElementsByTagName('ul')[0];
+	var img = content.getElementsByTagName('img');
+	var span = content.getElementsByTagName('span');
 
 	icon[0].src = fromIcon;
 	btn.onclick = function() {
@@ -186,13 +188,19 @@ window.onload = function() {
 		} else {
       content.innerHTML += '<li><img src="' + fromIcon + '"><span>'
           + text.value + '</span></li>';
-      changePosition(true);
+      changePosition(true, iNow);
       ws.send('{"fromId":"' + fromId + '","toId":"' + toId + '","text":"' + text.value + '"}');
 			text.value = '';
 			// 内容过多时,将滚动条放置到最底端
 			content.scrollTop = content.scrollHeight;
 		}
 	}
+	ws.onmessage = function(event) {
+	  var data = event.data;
+	  content.innerHTML += '<li><img src="' + toIcon + '"><span>'
+      + data + '</span></li>';
+    changePosition(false, iNow);
+	};
 }
 
 /*ws.onopen = function() {
@@ -202,9 +210,6 @@ ws.onclose = function(event) {
 	var code = event.code;
 	var reason = event.reason;
 	var wasClean = event.wasClean;
-};
-ws.onmessage = function(event) {
-	var data = event.data;
 };
 socket.onerror = function(event) {
 
