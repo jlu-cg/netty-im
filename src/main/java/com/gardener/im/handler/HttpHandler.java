@@ -36,14 +36,16 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>{
 
 	public void handle(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
 		String uri = request.uri();
-		if (wsUri.equalsIgnoreCase(uri)) {
+		if (wsUri.startsWith(ImConstant.WEB_SOCKET_PREFIX) || wsUri.equals(ImConstant.WEB_SOCKET_END)) {
             ctx.fireChannelRead(request.retain());
             return ;
         }
+		
 		int fileIndex = uri.indexOf("?");
 		if(fileIndex != -1) {
 			uri = uri.substring(0, fileIndex);
 		}
+		
 		if ("favicon.ico".equals(uri)) {
 			return ;
 		}

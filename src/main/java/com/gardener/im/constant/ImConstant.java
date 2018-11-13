@@ -14,4 +14,7 @@ public class ImConstant {
 	public static final File NOT_FOUND = new File(LOCATION + "/404.html");
 	
 	public static final int DEFAULT_SERVER_PORT = 8090;
+	
+	public static final String WEB_SOCKET_PREFIX = "/ws/";
+	public static final String WEB_SOCKET_END = "/ws";
 }

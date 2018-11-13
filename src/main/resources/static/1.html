@@ -151,7 +151,7 @@ function getRequest() {
   return theRequest;
 }
 
-function changePosition(direction, iNow){
+function changePosition(img, span, direction, iNow){
 	iNow++;
 	if(direction){
 		img[iNow].className += 'imgright';
@@ -165,7 +165,6 @@ function changePosition(direction, iNow){
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 window.onload = function() {
 	var ws = new WebSocket('ws://localhost:8090/ws');
-	alert(ws);
 	var requestParams = new Object();
 	requestParams = getRequest();
 	var fromId = requestParams['fromId'];
@@ -186,10 +185,14 @@ window.onload = function() {
 		if (text.value == '') {
 			alert('不能发送空消息');
 		} else {
-      content.innerHTML += '<li><img src="' + fromIcon + '"><span>'
+      content.innerHTML += '<li><img src="' + fromIcon + '"/><span>'
           + text.value + '</span></li>';
-      changePosition(true, iNow);
-      ws.send('{"fromId":"' + fromId + '","toId":"' + toId + '","text":"' + text.value + '"}');
+      changePosition(img, span, true, iNow);
+      if (ws.readyState == WebSocket.OPEN){
+    	  ws.send('{"fromId":"' + fromId + '","toId":"' + toId + '","text":"' + text.value + '"}');
+      }else{
+    	  alert("连接没有开启.");
+      }
 			text.value = '';
 			// 内容过多时,将滚动条放置到最底端
 			content.scrollTop = content.scrollHeight;
@@ -197,9 +200,9 @@ window.onload = function() {
 	}
 	ws.onmessage = function(event) {
 	  var data = event.data;
-	  content.innerHTML += '<li><img src="' + toIcon + '"><span>'
+	  content.innerHTML += '<li><img src="' + toIcon + '"/><span>'
       + data + '</span></li>';
-    changePosition(false, iNow);
+    changePosition(img, span, false, iNow);
 	};
 }
 
