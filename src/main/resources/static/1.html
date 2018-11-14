@@ -164,11 +164,11 @@ function changePosition(img, span, direction, iNow){
 
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 window.onload = function() {
-	var ws = new WebSocket('ws://localhost:8090/ws');
 	var requestParams = new Object();
 	requestParams = getRequest();
 	var fromId = requestParams['fromId'];
 	var toId = requestParams['toId'];
+	var ws = new WebSocket('ws://localhost:8090/ws/' + fromId);
 	var fromIcon = 'pic/' + fromId + '.jpg';
 	var toIcon = 'pic/' + toId + '.jpg';
 	var num = 0;

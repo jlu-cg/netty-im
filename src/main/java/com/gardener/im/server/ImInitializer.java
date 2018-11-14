@@ -20,7 +20,7 @@ public class ImInitializer extends ChannelInitializer<SocketChannel>{
 		pipeline.addLast(new HttpServerCodec());
 		pipeline.addLast(new HttpObjectAggregator(65536));
 		pipeline.addLast(new ChunkedWriteHandler());
-		pipeline.addLast(new HttpHandler("/ws"));
+		pipeline.addLast(new HttpHandler());
 		pipeline.addLast(new WebSocketServerProtocolHandler("/ws", null, true));
 		pipeline.addLast(new WebSocketHandler());
 	}

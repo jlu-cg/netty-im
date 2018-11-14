@@ -84,7 +84,7 @@ public class RequestUtil {
 		}
 	}
 
-	public static void parseParameters(@SuppressWarnings("rawtypes") Map map, String data, String encoding)
+	public static void parseParameters(Map<String, String> map, String data, String encoding)
 			throws UnsupportedEncodingException {
 		if (data != null && data.length() > 0) {
 			byte[] bytes = null;
@@ -96,7 +96,7 @@ public class RequestUtil {
 					bytes = data.getBytes(encoding);
 				}
 			} catch (UnsupportedEncodingException var5) {
-				;
+				
 			}
 
 			parseParameters(map, (byte[]) bytes, encoding);
@@ -187,8 +187,7 @@ public class RequestUtil {
 		map.put(name, newValues);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static void parseParameters(Map map, byte[] data, String encoding) throws UnsupportedEncodingException {
+	public static void parseParameters(Map<String, String> map, byte[] data, String encoding) throws UnsupportedEncodingException {
 		if (data != null && data.length > 0) {
 			int ix = 0;
 			int ox = 0;

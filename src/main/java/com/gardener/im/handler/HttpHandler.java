@@ -27,20 +27,16 @@ import io.netty.handler.stream.ChunkedNioFile;
  *
  */
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest>{
-	
-	private String wsUri;
-	
-	public HttpHandler(String wsUri) {
-		this.wsUri = wsUri;
-	}
 
 	public void handle(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
 		String uri = request.uri();
-		if (wsUri.startsWith(ImConstant.WEB_SOCKET_PREFIX) || wsUri.equals(ImConstant.WEB_SOCKET_END)) {
+		
+		if (uri.startsWith(ImConstant.WEB_SOCKET_PREFIX)) {
             ctx.fireChannelRead(request.retain());
+            String[] parameters = uri.split("/");
+            WebSocketHandler.USER_MAP.put(ctx.channel().id(), parameters[2]);
             return ;
         }
-		
 		int fileIndex = uri.indexOf("?");
 		if(fileIndex != -1) {
 			uri = uri.substring(0, fileIndex);

@@ -15,6 +15,7 @@ public class ImConstant {
 	
 	public static final int DEFAULT_SERVER_PORT = 8090;
 	
-	public static final String WEB_SOCKET_PREFIX = "/ws/";
-	public static final String WEB_SOCKET_END = "/ws";
+	public static final String WEB_SOCKET_PREFIX = "/ws";
+	
+	public static final String FROM_USER_ID = "fromId";
 }

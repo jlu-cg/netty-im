@@ -1,10 +1,9 @@
 package com.gardener.im.handler;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.gardener.core.TwoWayHashMap;
 
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,7 +27,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 	private static Logger LOGGER = LoggerFactory.getLogger(WebSocketHandler.class);
 	
 	private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-	public static Map<ChannelId, String> USER_MAP = new ConcurrentHashMap<>(280);
+	public static TwoWayHashMap<ChannelId, String> USER_MAP = new TwoWayHashMap<>(280);
 
 	public void handle(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
  
@@ -52,6 +51,7 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
         } else if (evt instanceof IdleStateEvent) {
             IdleStateEvent stateEvent = (IdleStateEvent) evt;
             if (stateEvent.state() == IdleState.READER_IDLE) {
+            	USER_MAP.remove(ctx.channel().id());
             	channelGroup.remove(ctx.channel());
                 ctx.writeAndFlush(new TextWebSocketFrame("由于您长时间不在线，系统已自动把你踢下线！")).addListener(ChannelFutureListener.CLOSE);
             }
