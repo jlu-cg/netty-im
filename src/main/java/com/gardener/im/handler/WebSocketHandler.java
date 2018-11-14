@@ -4,7 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gardener.core.TwoWayHashMap;
+import com.gardener.im.bean.Message;
+import com.google.gson.Gson;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
@@ -28,13 +31,20 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 	
 	private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	public static TwoWayHashMap<ChannelId, String> USER_MAP = new TwoWayHashMap<>(280);
+	private static Gson gson = new Gson();
 
 	public void handle(ChannelHandlerContext ctx, TextWebSocketFrame frame) throws Exception {
  
         // 返回应答消息
         String request = ((TextWebSocketFrame) frame).text();
         LOGGER.info("{} received {}", ctx.channel(), request);
-        ctx.channel().write(new TextWebSocketFrame(" 收到客户端请求："+request));
+        Message message = gson.fromJson(request, Message.class);
+        ChannelId toChannelId = USER_MAP.inverseGet(message.getToId());
+        Channel toChannel = channelGroup.find(toChannelId);
+        if(toChannel != null) {
+        	toChannel.writeAndFlush(new TextWebSocketFrame(message.getText()));
+        }
+//        ctx.channel().write(new TextWebSocketFrame(" 收到客户端请求："+request));
 	}
 
 	@Override

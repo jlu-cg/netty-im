@@ -151,17 +151,6 @@ function getRequest() {
   return theRequest;
 }
 
-function changePosition(img, span, direction, iNow){
-	iNow++;
-	if(direction){
-		img[iNow].className += 'imgright';
-    span[iNow].className += 'spanright';
-	}else{
-    img[iNow].className += 'imgleft';
-    span[iNow].className += 'spanleft';
-	}
-}
-
 window.WebSocket = window.WebSocket || window.MozWebSocket;
 window.onload = function() {
 	var requestParams = new Object();
@@ -176,9 +165,9 @@ window.onload = function() {
 	var btn = document.getElementById('btn');
 	var text = document.getElementById('text');
 	var iNow = -1;
-	var content = document.getElementsByTagName('ul')[0];
-	var img = content.getElementsByTagName('img');
-	var span = content.getElementsByTagName('span');
+  var content = document.getElementsByTagName('ul')[0];
+  var img = content.getElementsByTagName('img');
+  var span = content.getElementsByTagName('span');
 
 	icon[0].src = fromIcon;
 	btn.onclick = function() {
@@ -187,7 +176,9 @@ window.onload = function() {
 		} else {
       content.innerHTML += '<li><img src="' + fromIcon + '"/><span>'
           + text.value + '</span></li>';
-      changePosition(img, span, true, iNow);
+      iNow++;
+      img[iNow].className += 'imgright';
+      span[iNow].className += 'spanright';
       if (ws.readyState == WebSocket.OPEN){
     	  ws.send('{"fromId":"' + fromId + '","toId":"' + toId + '","text":"' + text.value + '"}');
       }else{
@@ -202,7 +193,9 @@ window.onload = function() {
 	  var data = event.data;
 	  content.innerHTML += '<li><img src="' + toIcon + '"/><span>'
       + data + '</span></li>';
-    changePosition(img, span, false, iNow);
+    iNow++;
+    img[iNow].className += 'imgleft';
+    span[iNow].className += 'spanleft';
 	};
 }
 
